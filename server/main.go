@@ -1,6 +1,22 @@
 package main
 
-import "net/rpc/jsonrpc"
+import (
+	"log"
+	"net"
+	"net/rpc"
+	"net/rpc/jsonrpc"
+)
+
+type Args struct {
+	X, Y int
+}
+
+type Math int
+
+func (m *Math) Add(args *Args, reply *int) error {
+	*reply = args.X + args.Y
+	return nil
+}
 
 func main() {
 	addy, err := net.ResolveTCPAddr("tcp", "0.0.0.0:12345")
@@ -11,7 +27,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	listener := new(Listener)
+
+	listener := new(Math)
 	rpc.Register(listener)
 	for {
 		conn, err := inbound.Accept()
